@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173d36">
+  <title>Phishing Field Guide | Security Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1b2925;
+      --muted: #68736e;
+      --paper: #f5f5ef;
+      --white: #fffefa;
+      --line: #dfe3da;
+      --forest: #173d36;
+      --mint: #d9ebe0;
+      --mint-ink: #205d46;
+      --coral: #d85e43;
+      --coral-pale: #fae4dc;
+      --gold: #e6b754;
+      --mono: "IBM Plex Mono", "Courier New", monospace;
+      --body: "DM Sans", "Segoe UI", sans-serif;
+      --display: "Manrope", "Trebuchet MS", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.6 var(--body); }
+    button { font: inherit; }
+    .topbar { height: 66px; display: flex; align-items: center; justify-content: space-between; padding: 0 5vw; color: #f9f8ef; background: var(--forest); }
+    .brand { display: flex; align-items: center; gap: 11px; font: 700 13px var(--display); }
+    .brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid #8bb29a; border-radius: 50%; color: #c5e0c8; font: 600 13px var(--mono); }
+    .top-meta { color: #c2d2c9; font: 11px var(--mono); }
+    .shell { display: grid; grid-template-columns: 266px minmax(0, 1fr); max-width: 1500px; min-height: calc(100vh - 66px); margin: 0 auto; }
+    .rail { padding: 35px 22px 28px 5vw; border-right: 1px solid var(--line); }
+    .rail-kicker, .eyebrow { color: var(--muted); font: 500 10px var(--mono); text-transform: uppercase; }
+    .rail-title { margin: 7px 0 23px; font: 800 20px/1.2 var(--display); }
+    .progress-copy { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--muted); font-size: 11px; }
+    .progress-track { height: 4px; overflow: hidden; background: #dfe4dc; }
+    .progress-fill { width: 0; height: 100%; background: var(--coral); transition: width .35s ease; }
+    .nav-list { display: grid; gap: 4px; margin-top: 25px; }
+    .nav-item { display: grid; grid-template-columns: 27px 1fr; align-items: center; width: 100%; padding: 10px 9px; border: 0; border-radius: 3px; background: transparent; color: #505c56; text-align: left; cursor: pointer; transition: background .18s, color .18s; }
+    .nav-item:hover { background: #e9ede5; color: var(--ink); }
+    .nav-item[aria-current="step"] { background: var(--forest); color: #fffefa; }
+    .nav-number { color: #8b9890; font: 11px var(--mono); }
+    .nav-item[aria-current="step"] .nav-number { color: #b6d2be; }
+    .nav-label { font-size: 12px; font-weight: 600; }
+    .rail-note { margin-top: 35px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .rail-note strong { color: var(--ink); }
+    main { min-width: 0; padding: 47px clamp(28px, 6vw, 88px) 72px; }
+    .lesson { display: none; max-width: 940px; margin: 0 auto; animation: arrive .32s ease both; }
+    .lesson.active { display: block; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 750px; margin: 10px 0 14px; font: 800 44px/1.1 var(--display); letter-spacing: 0; }
+    h2 { margin: 0 0 12px; font: 700 22px/1.25 var(--display); letter-spacing: 0; }
+    h3 { margin: 0 0 7px; font: 700 15px/1.35 var(--display); }
+    .dek { max-width: 680px; margin-bottom: 31px; color: #55625b; font-size: 16px; }
+    .section-rule { display: flex; align-items: center; gap: 13px; margin: 35px 0 16px; color: var(--muted); font: 500 10px var(--mono); text-transform: uppercase; }
+    .section-rule::after { height: 1px; flex: 1; background: var(--line); content: ""; }
+    .overview-stage { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(245px, .9fr); min-height: 250px; overflow: hidden; background: var(--forest); color: #f5f5eb; }
+    .stage-copy { align-self: center; padding: 30px 34px; }
+    .stage-copy .eyebrow { color: #b6d2be; }
+    .stage-copy h2 { max-width: 390px; margin: 11px 0; font-size: 25px; }
+    .stage-copy p { max-width: 400px; margin: 0; color: #d1ded4; font-size: 13px; }
+    .inbox-art { position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; min-height: 250px; background: #e7eee3; }
+    .inbox-art::before, .inbox-art::after { position: absolute; width: 240px; height: 240px; border: 1px solid #bdcfc0; border-radius: 50%; content: ""; }
+    .inbox-art::after { width: 188px; height: 188px; }
+    .mail-window { z-index: 1; width: min(78%, 270px); padding: 16px; background: var(--white); box-shadow: 0 12px 35px #18382f22; transform: rotate(-3deg); }
+    .mail-head { display: flex; align-items: center; gap: 9px; padding-bottom: 11px; border-bottom: 1px solid #e7e9e1; }
+    .mail-avatar { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: var(--coral-pale); color: #a04430; font: 600 11px var(--mono); }
+    .mail-from { font-size: 10px; font-weight: 700; }
+    .mail-to { color: #89928d; font-size: 9px; }
+    .mail-subject { margin: 11px 0 7px; font: 700 12px var(--display); }
+    .mail-lines { display: grid; gap: 5px; }
+    .mail-line { height: 5px; background: #e7e9e1; }
+    .mail-line:nth-child(2) { width: 82%; }
+    .mail-line:nth-child(3) { width: 61%; }
+    .mail-flag { position: absolute; z-index: 2; right: 11%; bottom: 22%; padding: 7px 10px; background: var(--coral); color: #fff; font: 10px var(--mono); transform: rotate(3deg); }
+    .three-up { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .signal { min-height: 138px; padding: 18px; background: var(--white); }
+    .signal-index { display: block; margin-bottom: 15px; color: var(--coral); font: 11px var(--mono); }
+    .signal p { margin: 0; color: var(--muted); font-size: 12px; }
+    .signal strong { color: var(--ink); }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .plain-panel { padding: 20px; border-top: 2px solid var(--forest); background: var(--white); }
+    .plain-panel.alert { border-color: var(--coral); }
+    .plain-panel p, .plain-panel li { color: #59665f; font-size: 13px; }
+    .plain-panel p:last-child { margin-bottom: 0; }
+    .plain-panel ul { display: grid; gap: 7px; margin: 12px 0 0; padding-left: 18px; }
+    .url-demo { margin: 19px 0; padding: 16px 18px; border-left: 3px solid var(--gold); background: #eeefe8; overflow-wrap: anywhere; font: 12px/1.9 var(--mono); }
+    .url-demo .bad { color: #b44c36; font-weight: 600; text-decoration: underline; text-decoration-style: wavy; text-underline-offset: 3px; }
+    .url-demo .good { color: var(--mint-ink); font-weight: 600; }
+    .url-caption { margin: -9px 0 18px; color: var(--muted); font-size: 11px; }
+    .tactic-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 25px; border-top: 1px solid var(--line); }
+    .tactic { display: grid; grid-template-columns: 35px 1fr; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .tactic-number { color: var(--coral); font: 11px var(--mono); }
+    .tactic p { margin: 0; color: var(--muted); font-size: 12px; }
+    .case-banner { display: flex; align-items: flex-start; gap: 17px; margin: 18px 0; padding: 20px; background: var(--forest); color: #f5f5eb; }
+    .case-year { color: #b6d2be; font: 600 12px var(--mono); white-space: nowrap; }
+    .case-banner p { margin: 0; color: #d1ded4; font-size: 13px; }
+    .case-banner strong { color: #fff; }
+    .case-source { color: var(--mint-ink); font-size: 12px; font-weight: 700; text-underline-offset: 3px; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin: 20px 0 25px; border: 1px solid var(--line); background: var(--line); }
+    .step { min-height: 135px; padding: 16px; background: var(--white); }
+    .step b { display: block; margin-bottom: 14px; color: var(--coral); font: 11px var(--mono); }
+    .step strong { display: block; margin-bottom: 5px; font: 700 13px var(--display); }
+    .step p { margin: 0; color: var(--muted); font-size: 11px; }
+    .quiz { margin-top: 35px; padding: 22px 23px; border: 1px solid var(--line); background: #eeefe8; }
+    .quiz-head { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; margin-bottom: 16px; }
+    .quiz-head h3 { margin: 0; }
+    .quiz-count { color: var(--muted); font: 10px var(--mono); }
+    .question { padding: 14px 0; border-top: 1px solid #d9ded5; }
+    .question p { margin: 0 0 10px; font-size: 13px; font-weight: 600; }
+    .answers { display: flex; flex-wrap: wrap; gap: 7px; }
+    .answer { padding: 7px 11px; border: 1px solid #cbd2c9; border-radius: 2px; background: var(--white); color: #3d4943; font-size: 11px; text-align: left; cursor: pointer; }
+    .answer:hover:not(:disabled) { border-color: var(--forest); }
+    .answer:disabled { cursor: default; opacity: .7; }
+    .answer.chosen-correct { border-color: #55866a; background: #dcece0; color: #205d46; opacity: 1; }
+    .answer.chosen-wrong { border-color: #cc715c; background: #f9e3dc; color: #943d2b; opacity: 1; }
+    .feedback { min-height: 20px; margin: 9px 0 0; color: var(--muted); font-size: 11px; }
+    .feedback.correct { color: var(--mint-ink); }
+    .feedback.incorrect { color: #a64632; }
+    .quiz-result { display: none; margin-top: 13px; padding: 11px 13px; border-left: 3px solid var(--forest); background: var(--white); font-size: 12px; }
+    .quiz-result.show { display: block; }
+    .footer-nav { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: 32px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .step-button { display: inline-flex; align-items: center; gap: 10px; padding: 9px 13px; border: 1px solid var(--forest); border-radius: 2px; background: var(--forest); color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .step-button:hover { background: #25564a; }
+    .step-button.secondary { background: transparent; color: var(--forest); }
+    .step-button:disabled { border-color: #cbd2c9; background: transparent; color: #9ba49e; cursor: default; }
+    .footer-hint { color: var(--muted); font: 10px var(--mono); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (max-width: 780px) {
+      .topbar { height: 58px; padding: 0 18px; }
+      .top-meta { font-size: 9px; }
+      .shell { display: block; }
+      .rail { padding: 15px 18px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .rail-title { display: inline-block; margin: 3px 0 0 8px; font-size: 16px; vertical-align: baseline; }
+      .rail-kicker { display: none; }
+      .progress-copy { margin: 12px 0 5px; }
+      .nav-list { display: flex; gap: 5px; overflow-x: auto; margin-top: 12px; padding-bottom: 3px; }
+      .nav-item { flex: 0 0 auto; display: flex; gap: 6px; width: auto; padding: 8px 10px; }
+      .nav-label { white-space: nowrap; }
+      .nav-number { font-size: 10px; }
+      .rail-note { display: none; }
+      main { padding: 29px 18px 50px; }
+      .overview-stage { grid-template-columns: 1fr; }
+      .stage-copy { padding: 25px 23px; }
+      .inbox-art { min-height: 205px; }
+      .three-up { grid-template-columns: 1fr; }
+      .signal { min-height: auto; }
+      .signal-index { margin-bottom: 7px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .step { min-height: 120px; }
+    }
+    @media (max-width: 480px) {
+      .top-meta { max-width: 125px; text-align: right; line-height: 1.4; }
+      h1 { font-size: 34px; }
+      .split, .tactic-list { grid-template-columns: 1fr; }
+      .case-banner { display: block; }
+      .case-year { display: block; margin-bottom: 9px; }
+      .quiz { padding: 17px 14px; }
+      .footer-hint { display: none; }
+      .step-button { padding: 9px 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">!</span> SECURITY LEARNING</div>
+    <div class="top-meta">FIELD GUIDE&nbsp; / &nbsp;7 LESSONS</div>
+  </header>
+
+  <div class="shell">
+    <aside class="rail" aria-label="Course navigation">
+      <span class="rail-kicker">A practical short course</span>
+      <h2 class="rail-title">Spot the hook</h2>
+      <div class="progress-copy"><span>Course progress</span><span id="progress-label">0 / 14</span></div>
+      <div class="progress-track" role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"><div class="progress-fill" id="progress-fill"></div></div>
+      <nav class="nav-list" id="lesson-nav" aria-label="Lessons">
+        <button class="nav-item" data-lesson="0" aria-current="step"><span class="nav-number">01</span><span class="nav-label">Start here</span></button>
+        <button class="nav-item" data-lesson="1"><span class="nav-number">02</span><span class="nav-label">Suspicious email</span></button>
+        <button class="nav-item" data-lesson="2"><span class="nav-number">03</span><span class="nav-label">Fake sign-in</span></button>
+        <button class="nav-item" data-lesson="3"><span class="nav-number">04</span><span class="nav-label">Fraudulent sites</span></button>
+        <button class="nav-item" data-lesson="4"><span class="nav-number">05</span><span class="nav-label">Social tactics</span></button>
+        <button class="nav-item" data-lesson="5"><span class="nav-number">06</span><span class="nav-label">Case file</span></button>
+        <button class="nav-item" data-lesson="6"><span class="nav-number">07</span><span class="nav-label">Practice</span></button>
+      </nav>
+      <p class="rail-note"><strong>One useful rule</strong><br>Pause. Verify through a channel you find yourself.</p>
+    </aside>
+
+    <main id="main-content">
+      <section class="lesson active" data-title="Start here" aria-labelledby="title-0">
+        <div class="eyebrow">01 / The field guide</div>
+        <h1 id="title-0">Phishing looks ordinary. That is the point.</h1>
+        <p class="dek">Learn to spot the pressure, check the path, and choose a safer next step. You do not need to catch every clue; one good pause can break the attack.</p>
+        <div class="overview-stage">
+          <div class="stage-copy">
+            <div class="eyebrow">Your three-part check</div>
+            <h2>Notice what feels off. Verify before you act.</h2>
+            <p>Attackers borrow familiar names and routines. Look beyond the logo: inspect the request, the sender, and where the link actually leads.</p>
+          </div>
+          <div class="inbox-art" role="img" aria-label="Illustration of an email marked for inspection">
+            <div class="mail-window"><div class="mail-head"><span class="mail-avatar">IT</span><div><div class="mail-from">Account Support</div><div class="mail-to">to: you · just now</div></div></div><div class="mail-subject">Action needed today</div><div class="mail-lines"><span class="mail-line"></span><span class="mail-line"></span><span class="mail-line"></span></div></div>
+            <span class="mail-flag">PAUSE + CHECK</span>
+          </div>
+        </div>
+        <div class="section-rule">The pattern to remember</div>
+        <div class="three-up">
+          <div class="signal"><span class="signal-index">01 / NOTICE</span><h3>Unexpected request</h3><p>A surprise invoice, password reset, delivery issue, or request for a code.</p></div>
+          <div class="signal"><span class="signal-index">02 / VERIFY</span><h3>Use a known route</h3><p>Open the official app or type a saved, known address yourself.</p></div>
+          <div class="signal"><span class="signal-index">03 / REPORT</span><h3>Share the warning</h3><p>Use your organization's report-phishing process; don't forward the link.</p></div>
+        </div>
+        <div class="quiz" data-quiz="intro">
+          <div class="quiz-head"><h3>Quick check</h3><span class="quiz-count">01 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="A separate, trusted route checks the request without using the sender's link or phone number."><p>1. An unexpected message says your account will close in 10 minutes. What is the safest first move?</p><div class="answers"><button class="answer">Click its sign-in link to check</button><button class="answer">Open the official app or site yourself</button><button class="answer">Reply and ask if it is real</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="A sender's display name is easy to copy. The actual address and the context of the request matter more."><p>2. Which clue is easiest for an attacker to fake?</p><div class="answers"><button class="answer">The sender's display name</button><button class="answer">Whether you expected the request</button><button class="answer">A confirmation from your known IT number</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary" disabled>← Previous</button><span class="footer-hint">A short course · 7 lessons</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Suspicious email" aria-labelledby="title-1">
+        <div class="eyebrow">02 / Read the message</div>
+        <h1 id="title-1">An email can look familiar and still be wrong.</h1>
+        <p class="dek">Treat unexpected requests as unverified, even when the name, logo, or writing style seems right. These are useful signals, not a checklist you must complete.</p>
+        <div class="section-rule">Warning signs worth a second look</div>
+        <div class="three-up">
+          <div class="signal"><span class="signal-index">SENDER</span><h3>Address mismatch</h3><p>Display name looks familiar, but the full address or reply-to domain does not.</p></div>
+          <div class="signal"><span class="signal-index">REQUEST</span><h3>Unusual urgency</h3><p>“Pay now,” “keep this secret,” or “your access ends today” discourages checking.</p></div>
+          <div class="signal"><span class="signal-index">CONTENT</span><h3>Unexpected attachment</h3><p>A surprise invoice, shared document, QR code, or request for a password or MFA code.</p></div>
+        </div>
+        <div class="section-rule">A message to inspect</div>
+        <div class="split">
+          <article class="plain-panel alert"><div class="eyebrow">Training example · fictional</div><h3>Payroll update required</h3><p><strong>From:</strong> Payroll Team &lt;payroll@northstar-benefits.example&gt;</p><p>“Your direct deposit will be paused. Confirm your details before 5 PM using the button below.”</p></article>
+          <article class="plain-panel"><div class="eyebrow">What to notice</div><ul><li>Did you expect a payroll change?</li><li>Does the domain match the employer's real domain?</li><li>Is a deadline pressuring you to skip a check?</li><li>Can you verify in the payroll app or with HR using a known contact?</li></ul></article>
+        </div>
+        <p class="url-caption">The example uses the reserved <code>.example</code> domain; it is not a real login address.</p>
+        <div class="quiz" data-quiz="email">
+          <div class="quiz-head"><h3>Inbox check</h3><span class="quiz-count">02 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="A known phone number or official app is independent of the message and its sender."><p>1. A supplier emails new bank details and asks for same-day payment. What now?</p><div class="answers"><button class="answer">Pay quickly to avoid a late fee</button><button class="answer">Confirm with the supplier using a known number</button><button class="answer">Reply to the email for confirmation</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="Display names are not proof of identity. Inspect the full address and verify any surprising request independently."><p>2. Which statement about a sender's display name is true?</p><div class="answers"><button class="answer">It proves the message is from that person</button><button class="answer">It can be copied; check the address and context</button><button class="answer">It is reliable when a company logo is present</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">Inspect the sender, request, and context</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Fake sign-in" aria-labelledby="title-2">
+        <div class="eyebrow">03 / Before you sign in</div>
+        <h1 id="title-2">A convincing login page proves very little.</h1>
+        <p class="dek">Brand colors, familiar layouts, and even a padlock can appear on a deceptive page. The address and how you arrived there matter more.</p>
+        <div class="section-rule">Inspect the address, not the artwork</div>
+        <div class="url-demo" aria-label="Example deceptive URL"><span>https://</span><span class="bad">accounts.example.com</span><span>.signin-check.</span><span class="good">attacker.example</span><span>/verify</span></div>
+        <p class="url-caption">Fictional example: the controlling domain is <strong>attacker.example</strong>, not accounts.example.com. Read the hostname from right to left, stopping before the first single slash.</p>
+        <div class="split">
+          <article class="plain-panel alert"><div class="eyebrow">Stop if you see</div><ul><li>A link from an unexpected email, text, or QR code</li><li>A domain with added words, misspellings, or an odd ending</li><li>A page asking for a password, recovery code, or MFA approval you did not start</li><li>A browser warning or a request to install a “security update”</li></ul></article>
+          <article class="plain-panel"><div class="eyebrow">Do this instead</div><ul><li>Close the page; don't enter test credentials</li><li>Open the service from its official app or a bookmark</li><li>Check your password manager: it should not autofill on an unfamiliar domain</li><li>Deny unexpected MFA prompts; report them to IT or the service provider</li></ul></article>
+        </div>
+        <div class="quiz" data-quiz="login">
+          <div class="quiz-head"><h3>Sign-in check</h3><span class="quiz-count">03 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="In this fictional URL, attacker.example is the registered-looking hostname shown before /verify; the branded text is only a subdomain."><p>1. In <code>https://accounts.example.com.signin-check.attacker.example/verify</code>, which is the controlling hostname?</p><div class="answers"><button class="answer">accounts.example.com</button><button class="answer">attacker.example</button><button class="answer">signin-check</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="A padlock means the connection is encrypted; it does not prove the site is the genuine service."><p>2. What does the padlock in a browser address bar tell you?</p><div class="answers"><button class="answer">The website is genuine</button><button class="answer">The connection is encrypted, not that the site is trustworthy</button><button class="answer">The website has no malware</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">Never test a suspicious page with a real password</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Fraudulent sites" aria-labelledby="title-3">
+        <div class="eyebrow">04 / Check the destination</div>
+        <h1 id="title-3">A polished website is not proof of legitimacy.</h1>
+        <p class="dek">Fraudulent shopping, delivery, charity, and support sites often borrow familiar design cues. Slow down at the moment money, personal details, or a download is requested.</p>
+        <div class="section-rule">Signals to weigh together</div>
+        <div class="tactic-list">
+          <div class="tactic"><span class="tactic-number">01</span><div><h3>Lookalike domain</h3><p>Extra words, swapped characters, or an unusual top-level domain. A lock icon is not a trust certificate.</p></div></div>
+          <div class="tactic"><span class="tactic-number">02</span><div><h3>Hard-to-reach business</h3><p>No verifiable address or independent contact details; support exists only in the suspicious message.</p></div></div>
+          <div class="tactic"><span class="tactic-number">03</span><div><h3>Odd payment route</h3><p>Gift cards, cryptocurrency, wire transfers, or payment to a personal account for an ordinary purchase.</p></div></div>
+          <div class="tactic"><span class="tactic-number">04</span><div><h3>Too-good offer</h3><p>Extreme discounts, fake countdowns, copied reviews, or a demand to pay before you can verify.</p></div></div>
+        </div>
+        <div class="section-rule">A safer check</div>
+        <div class="plain-panel"><p>Navigate to the store or service independently. Search for contact and refund details on the genuine site, and look for reviews from more than one independent source. For a charity appeal, visit the charity's known website directly. Don't use contact links or phone numbers supplied only by the suspicious page.</p></div>
+        <div class="quiz" data-quiz="sites">
+          <div class="quiz-head"><h3>Website check</h3><span class="quiz-count">04 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="Independent navigation avoids relying on the suspicious message's link, phone number, or copied branding."><p>1. A delivery text links to a page requesting a small redelivery fee. What is safest?</p><div class="answers"><button class="answer">Visit the carrier's official app or site yourself</button><button class="answer">Pay; the amount is small</button><button class="answer">Call the number shown on the linked page</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="HTTPS encrypts traffic between browser and site; it does not certify that the operator is honest or the business genuine."><p>2. A shop uses HTTPS. What can you conclude from that alone?</p><div class="answers"><button class="answer">The shop is legitimate</button><button class="answer">The connection is encrypted; verify the business separately</button><button class="answer">Your payment is guaranteed safe</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">Verify the business outside the page</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Social tactics" aria-labelledby="title-4">
+        <div class="eyebrow">05 / The human angle</div>
+        <h1 id="title-4">Social engineering aims at your next decision.</h1>
+        <p class="dek">Phishing messages are designed to make a risky action feel routine. Recognizing the emotional lever gives you time to choose a safer route.</p>
+        <div class="tactic-list">
+          <div class="tactic"><span class="tactic-number">01</span><div><h3>Urgency and fear</h3><p>“Your account is locked.” “Pay by noon.” A short deadline makes verification feel costly.</p></div></div>
+          <div class="tactic"><span class="tactic-number">02</span><div><h3>Authority and impersonation</h3><p>A message borrows the voice of a manager, bank, government office, or IT support.</p></div></div>
+          <div class="tactic"><span class="tactic-number">03</span><div><h3>Curiosity and reward</h3><p>A package, shared file, unexpected refund, or exclusive offer tempts you to open first.</p></div></div>
+          <div class="tactic"><span class="tactic-number">04</span><div><h3>Familiarity and trust</h3><p>Personal details from public profiles, breached data, or a compromised mailbox make a lie feel specific.</p></div></div>
+          <div class="tactic"><span class="tactic-number">05</span><div><h3>Scarcity and reciprocity</h3><p>A limited offer or an apparent favor nudges you toward a quick “yes.”</p></div></div>
+          <div class="tactic"><span class="tactic-number">06</span><div><h3>Multi-channel pressure</h3><p>An email is followed by a call or text that repeats the story and discourages asking anyone else.</p></div></div>
+        </div>
+        <div class="section-rule">Give yourself a verification pause</div>
+        <div class="plain-panel"><p>Stop before sending money, credentials, gift cards, documents, or one-time codes. Contact the person or organization using details you already trust, and ask a colleague when the request involves work or payment.</p></div>
+        <div class="quiz" data-quiz="tactics">
+          <div class="quiz-head"><h3>Pressure check</h3><span class="quiz-count">05 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="Urgency creates pressure to skip normal checks. Verify through an independent, known channel before acting."><p>1. A caller claiming to be your CEO demands a confidential gift-card purchase. What tactic is most obvious?</p><div class="answers"><button class="answer">Authority plus urgency and secrecy</button><button class="answer">A normal payment workflow</button><button class="answer">Proof of identity</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="A known number or a separate conversation with a colleague is not controlled by the suspicious caller."><p>2. How do you verify an unusual manager request?</p><div class="answers"><button class="answer">Call the number the caller just gave you</button><button class="answer">Use a known contact method or confirm in person</button><button class="answer">Reply to the same message thread</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">A real name or voice is not verification</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Case file" aria-labelledby="title-5">
+        <div class="eyebrow">06 / Case file</div>
+        <h1 id="title-5">A familiar supplier became a costly impersonation.</h1>
+        <p class="dek">A documented business-email-compromise case shows how vendor trust and realistic payment requests can be exploited. It is related to phishing through social engineering, though the fraud centered on impersonation and invoices rather than a fake login page.</p>
+        <div class="case-banner"><span class="case-year">2013–2015</span><p><strong>Google and Facebook lost more than $100 million</strong> to a fraud scheme involving fake invoices and email messages impersonating a hardware vendor. The U.S. Department of Justice described the scheme and announced the defendant's sentencing in 2019.</p></div>
+        <div class="split">
+          <article class="plain-panel"><div class="eyebrow">The lesson</div><h3>Familiar business details can be copied.</h3><p>A plausible invoice, known vendor name, or routine payment schedule is not independent proof that bank details or instructions are genuine.</p></article>
+          <article class="plain-panel"><div class="eyebrow">The control</div><h3>Verify changes out of band.</h3><p>Confirm new payment details using a previously verified phone number or established vendor portal. Follow dual-approval rules and report unexpected changes.</p></article>
+        </div>
+        <p style="margin:16px 0 0"><a class="case-source" href="https://www.justice.gov/opa/pr/lithuanian-man-sentenced-5-years-prison-scheme-defrauded-google-and-facebook-more-100" target="_blank" rel="noopener noreferrer">Read the U.S. Department of Justice case summary ↗</a></p>
+        <div class="quiz" data-quiz="case">
+          <div class="quiz-head"><h3>Case-file check</h3><span class="quiz-count">06 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="A phone number or portal already on file is independent of the email requesting the change."><p>1. An established vendor emails updated bank details. What is the strongest check?</p><div class="answers"><button class="answer">Confirm via a number already on file</button><button class="answer">Reply to the email asking “is this you?”</button><button class="answer">Pay a small test amount immediately</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="The case involved impersonation and fraudulent invoices; it illustrates related social-engineering risk, not a fake-login-page incident."><p>2. What did this case primarily illustrate?</p><div class="answers"><button class="answer">A fake sign-in page stealing passwords</button><button class="answer">Vendor impersonation and fraudulent payment requests</button><button class="answer">A lost laptop containing company files</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">Source: U.S. Department of Justice</span><button class="step-button next">Next lesson <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section class="lesson" data-title="Practice" aria-labelledby="title-6">
+        <div class="eyebrow">07 / Make the safe move</div>
+        <h1 id="title-6">One calm pause can change the outcome.</h1>
+        <p class="dek">Use this short response routine for suspicious messages, pages, calls, and payment requests.</p>
+        <div class="steps">
+          <div class="step"><b>01 / PAUSE</b><strong>Don't interact</strong><p>No links, attachments, replies, QR scans, codes, or payments.</p></div>
+          <div class="step"><b>02 / CHECK</b><strong>Use a known route</strong><p>Open the official app or call a verified number you already have.</p></div>
+          <div class="step"><b>03 / REPORT</b><strong>Alert the right team</strong><p>Use your organization's report button or contact IT/security directly.</p></div>
+          <div class="step"><b>04 / RECOVER</b><strong>Act quickly if needed</strong><p>If you clicked or shared data, tell IT or your bank promptly; change reused passwords from the genuine site.</p></div>
+        </div>
+        <div class="section-rule">Final scenario</div>
+        <div class="plain-panel alert"><div class="eyebrow">Scenario · fictional</div><h3>Your colleague sends a shared-file alert</h3><p>The email is unexpected. The display name is right, but the address has an extra word. The link opens a page asking for your work password and MFA code.</p></div>
+        <div class="quiz" data-quiz="practice">
+          <div class="quiz-head"><h3>Choose the safer response</h3><span class="quiz-count">07 / 02</span></div>
+          <div class="question" data-correct="1" data-explain="A separately verified contact breaks the link between you and the suspicious message; reporting helps protect others too."><p>1. What should you do?</p><div class="answers"><button class="answer">Close it, verify with the colleague using a known channel, then report it</button><button class="answer">Enter your password but skip the MFA step</button><button class="answer">Forward it to coworkers to ask what they think</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="question" data-correct="2" data-explain="Fast reporting gives IT or your provider a chance to secure accounts and investigate. Don't wait to see what happens."><p>2. You already entered your password. What next?</p><div class="answers"><button class="answer">Wait for an alert before doing anything</button><button class="answer">Contact IT or the provider immediately and change it from the genuine site</button><button class="answer">Reply to the message and ask them to delete your details</button></div><p class="feedback" aria-live="polite"></p></div>
+          <div class="quiz-result" aria-live="polite"></div>
+        </div>
+        <div class="section-rule">Everyday security habits</div>
+        <div class="split">
+          <article class="plain-panel"><h3>Make accounts harder to take over</h3><p>Use a unique password for every account and store it in a reputable password manager. Turn on MFA, preferably passkeys or a hardware security key where available. Never share one-time codes or approve a sign-in you did not start.</p></article>
+          <article class="plain-panel"><h3>Make reporting routine</h3><p>Use your workplace's reporting path, keep software and browsers updated, and tell IT or your bank promptly if you clicked, downloaded, paid, or shared credentials. Reporting quickly is more useful than feeling embarrassed.</p></article>
+        </div>
+        <div class="footer-nav"><button class="step-button secondary previous">← Previous</button><span class="footer-hint">Completion is tracked on this device only</span><button class="step-button" id="restart">Start over ↺</button></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const lessons = [...document.querySelectorAll(".lesson")];
+      const navButtons = [...document.querySelectorAll(".nav-item")];
+      const visited = new Set([0]);
+      const completedQuizzes = new Set();
+      const progressLabel = document.querySelector("#progress-label");
+      const progressFill = document.querySelector("#progress-fill");
+      const progressBar = document.querySelector('[role="progressbar"]');
+      let current = 0;
+
+      function updateProgress() {
+        const total = lessons.length;
+        const complete = Math.min(total, visited.size + completedQuizzes.size);
+        const percent = Math.round((complete / (total * 2)) * 100);
+        progressLabel.textContent = `${complete} / ${total * 2}`;
+        progressFill.style.width = `${percent}%`;
+        progressBar.setAttribute("aria-valuemax", String(total * 2));
+        progressBar.setAttribute("aria-valuenow", String(complete));
+      }
+
+      function showLesson(index) {
+        current = Math.max(0, Math.min(lessons.length - 1, index));
+        lessons.forEach((lesson, i) => {
+          lesson.classList.toggle("active", i === current);
+          lesson.setAttribute("aria-hidden", String(i !== current));
+        });
+        navButtons.forEach((button, i) => {
+          if (i === current) button.setAttribute("aria-current", "step");
+          else button.removeAttribute("aria-current");
+        });
+        visited.add(current);
+        updateProgress();
+        document.querySelector("main").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      navButtons.forEach(button => button.addEventListener("click", () => showLesson(Number(button.dataset.lesson))));
+      lessons.forEach((lesson, index) => {
+        lesson.querySelector(".next")?.addEventListener("click", () => showLesson(index + 1));
+        lesson.querySelector(".previous")?.addEventListener("click", () => showLesson(index - 1));
+      });
+
+      document.querySelectorAll(".question").forEach(question => {
+        const quiz = question.closest(".quiz");
+        const buttons = [...question.querySelectorAll(".answer")];
+        const feedback = question.querySelector(".feedback");
+        buttons.forEach((button, index) => button.addEventListener("click", () => {
+          if (question.dataset.answered) return;
+          question.dataset.answered = "true";
+          const correct = index === Number(question.dataset.correct);
+          question.dataset.score = String(correct);
+          button.classList.add(correct ? "chosen-correct" : "chosen-wrong");
+          if (!correct) buttons[Number(question.dataset.correct)].classList.add("chosen-correct");
+          buttons.forEach(option => { option.disabled = true; });
+          feedback.textContent = `${correct ? "Correct." : "Not quite."} ${question.dataset.explain}`;
+          feedback.classList.add(correct ? "correct" : "incorrect");
+          const questions = [...quiz.querySelectorAll(".question")];
+          const answered = questions.filter(item => item.dataset.answered).length;
+          if (answered === questions.length) {
+            const score = questions.filter(item => item.dataset.score === "true").length;
+            const result = quiz.querySelector(".quiz-result");
+            result.textContent = `Checkpoint complete: ${score} of ${questions.length} correct. ${score === questions.length ? "Excellent work." : "Review the explanations, then carry the safer choice into your next message."}`;
+            result.classList.add("show");
+            completedQuizzes.add(quiz.dataset.quiz);
+            updateProgress();
+          }
+        }));
+      });
+
+      document.querySelector("#restart").addEventListener("click", () => {
+        document.querySelectorAll(".question").forEach(question => {
+          delete question.dataset.answered;
+          delete question.dataset.score;
+          question.querySelectorAll(".answer").forEach(button => {
+            button.disabled = false;
+            button.classList.remove("chosen-correct", "chosen-wrong");
+          });
+          const feedback = question.querySelector(".feedback");
+          feedback.textContent = "";
+          feedback.classList.remove("correct", "incorrect");
+        });
+        document.querySelectorAll(".quiz-result").forEach(result => {
+          result.textContent = "";
+          result.classList.remove("show");
+        });
+        completedQuizzes.clear();
+        visited.clear();
+        showLesson(0);
+      });
+
+      showLesson(0);
+    })();
+  </script>
+</body>
+</html>
